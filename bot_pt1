@@ -1,0 +1,44 @@
+import telebot
+from telebot import types
+
+
+bot = telebot.TeleBot('5259530161:AAGZn-eGhXpZVNHUbyzcWzI0oDJmDAaIfv8')
+
+
+def send_inline_kb(message):
+    kb = types.InlineKeyboardMarkup()
+    button_1 = telebot.types.InlineKeyboardButton("Контакты", callback_data=f'1-1')
+    button_2 = telebot.types.InlineKeyboardButton("Адрес", callback_data=f'1-2')
+    kb.add(button_1, button_2)
+    button_3 = telebot.types.InlineKeyboardButton("Свободные окошки", callback_data=f'1-3')
+    kb.add(button_3)
+    url_button = types.InlineKeyboardButton(text="Instagram",
+                                            url='https://instagram.com/hannaplisko_nails?igshid=YmMyMTA2M2Y=')
+    kb.add(url_button)
+    bot.send_message(message.chat.id, ' Что бы Вы хотели узнать?', reply_markup=kb)
+
+
+@bot.message_handler(commands=['start'])
+def welcome(message):
+    bot.send_message(message.chat.id, "Привет! Как тебя зовут?")
+
+
+@bot.message_handler(content_types=['text'])
+def some_text(message):
+    bot.send_message(message.chat.id, "Я бот-помощник для записи на ноготочки. Приятно познакомиться!")
+    send_inline_kb(message)
+
+
+@bot.callback_query_handler(func=lambda call:True)
+def callback_inline(call):
+    if call.message:
+        text = call.data
+        if text == '1-1':
+            bot.send_message(call.message.chat.id, 'Номер телефона: +375295232123')
+        elif text =='1-2':
+            bot.send_message(call.message.chat.id, 'г. Минск, ул. Янки Мавра 16/1 кв. 62')
+        elif text =='1-3':
+            bot.send_message(call.message.chat.id, 'Окошки')
+    else:
+        pass
+
